@@ -8,15 +8,11 @@ import {
     Button,
 } from 'react-native';
 import RepoItem from './components/RepoItem';
+import { useSelector } from 'react-redux';
 
-const DATA = [
-    { id: 1, name: 'AP-POLYTECHNIC', stargazers_count: 1 },
-    { id: 2, name: 'AP-POLYTECHNIC', stargazers_count: 1 },
-    { id: 4, name: 'AP-POLYTECHNIC', stargazers_count: 1 },
-    { id: 3, name: 'AP-POLYTECHNIC', stargazers_count: 1 },
-    { id: 5, name: 'AP-POLYTECHNIC', stargazers_count: 1 },
-];
-const App = () => {
+const ListRepoScreen = () => {
+    const { repoItems } = useSelector(state => state.repos);
+
     const [text, onChangeText] = useState('');
 
     return (
@@ -33,7 +29,7 @@ const App = () => {
 
             <View style={styles.listRepo}>
                 <FlatList
-                    data={DATA}
+                    data={repoItems}
                     renderItem={({ item }) => (
                         <RepoItem
                             name={item.name}
@@ -52,7 +48,7 @@ const App = () => {
     );
 };
 
-export default App;
+export default ListRepoScreen;
 
 const styles = StyleSheet.create({
     container: {
