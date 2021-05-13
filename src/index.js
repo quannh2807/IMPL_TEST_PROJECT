@@ -16,17 +16,13 @@ import { fetchListRepo } from './reducers/repoReducer';
 import { getUser } from './reducers/userReducer';
 
 const ListRepoScreen = () => {
-    const { repoItems, isLoadMore } = useSelector(state => state.repos);
+    const { repoItems, isLoadMore, isLoading } = useSelector(
+        state => state.repos,
+    );
     const { user, messages } = useSelector(state => state.user);
 
-    const [text, onChangeText] = useState(user ? user.login : '');
+    const [text, onChangeText] = useState(user.login ? user.login : '');
     const dispatch = useDispatch();
-    const handleSearchUserRepos = () => {
-        handleValidateInput(text);
-
-        dispatch(getUser(text));
-        dispatch(fetchListRepo(text));
-    };
 
     const handleValidateInput = checkingText => {
         const regexp = /^(?!\s*$).+/;
@@ -35,17 +31,25 @@ const ListRepoScreen = () => {
         if (checkingResult === null) {
             Alert.alert('Lỗi', 'Không được bỏ trống username');
 
-            return;
+            return false;
         }
+        return true;
+    };
+
+    const handleSearchUserRepos = () => {
+        const valid = handleValidateInput(text);
+        if (!valid) return;
+
+        dispatch(getUser(text));
+        dispatch(fetchListRepo(text));
     };
     const handleChangeTextInput = value => onChangeText(value);
-    const renderListRepo = ({ item }) => (
-        <RepoItem name={item.name} star={item.stargazers_count} />
-    );
+    const renderListRepo = ({ item }) => <RepoItem {...item} />;
 
     return (
         <SafeAreaView style={styles.container}>
             <FlatList
+                style={styles.listRepo}
                 data={repoItems}
                 renderItem={renderListRepo}
                 keyExtractor={item => `${item.id}`}
@@ -64,6 +68,7 @@ const ListRepoScreen = () => {
                                 <Button
                                     title="Search"
                                     onPress={handleSearchUserRepos}
+                                    disabled={isLoading}
                                 />
                             </View>
                         </View>
@@ -101,6 +106,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
 
+    listRepo: {
+        marginBottom: 15,
+    },
+
     searchSection: {
         marginHorizontal: 15,
         marginTop: 15,
@@ -119,8 +128,6 @@ const styles = StyleSheet.create({
         flex: 1,
         marginLeft: 10,
     },
-
-    listRepo: {},
 
     footer: {
         alignItems: 'center',

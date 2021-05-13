@@ -1,6 +1,14 @@
-import { FETCH_LIST_REPOS, CHANGE_REPO_MESSAGES } from '../constants';
+import {
+    FETCH_LIST_REPOS,
+    CHANGE_REPO_MESSAGES,
+    CHANGE_ISLOADING,
+} from '../constants';
 import repoApi from '../apis/repoApi';
-import { fetchRepo, changeRepoMessages } from '../actions/repoAction';
+import {
+    fetchRepo,
+    changeRepoMessages,
+    changeIsloading,
+} from '../actions/repoAction';
 
 const initalState = {
     repoItems: [],
@@ -28,12 +36,21 @@ const repoReducer = (state = initalState, action) => {
             };
         }
 
+        case CHANGE_ISLOADING: {
+            state.isLoading = action.payload;
+
+            return {
+                ...state,
+            };
+        }
+
         default:
             return state;
     }
 };
 
 export const fetchListRepo = userName => async dispatch => {
+    await dispatch(changeIsloading(true));
     try {
         const res = await repoApi.getRepos(userName, {
             page: 1,
@@ -44,6 +61,7 @@ export const fetchListRepo = userName => async dispatch => {
         console.log('fetchListRepo ', error);
         await dispatch(changeRepoMessages('Không tìm thấy username'));
     }
+    await dispatch(changeIsloading(false));
 };
 
 export default repoReducer;

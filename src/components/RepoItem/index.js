@@ -1,15 +1,48 @@
-import React from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { Button, FlatList, StyleSheet, Text, View } from 'react-native';
+import { useSelector } from 'react-redux';
 
-const RepoItem = ({ name, star }) => {
+import StargazerItem from '../StargazerItem';
+import stargazerApi from '../../apis/stargazerApi';
+
+const RepoItem = props => {
+    const [stargazers, setStargazers] = useState([]);
+
+    const { name, stargazers_count } = props;
+    const { user } = useSelector(state => state.user);
+    const [isLoadStargazers, setIsLoadStargazers] = useState(false);
+
+    const handleLoadStargazers = async () => {
+        try {
+            const data = { login: user.login, repo: name };
+            const params = { page: 1, per_page: 30 };
+            const res = await stargazerApi.getStargazers(data, params);
+            setStargazers(res.data);
+        } catch (error) {}
+        setIsLoadStargazers(!isLoadStargazers);
+    };
+    const render = ({ item }) => <StargazerItem {...item} />;
+
     return (
-        <View style={styles.listRepoItem}>
-            <View>
-                <Text>{name}</Text>
-                <Text>{`Star: ${star}`}</Text>
+        <>
+            <View style={styles.listRepoItem}>
+                <View>
+                    <Text>{name}</Text>
+                    <Text>{`Star: ${stargazers_count}`}</Text>
+                </View>
+                <Button
+                    title={isLoadStargazers ? 'Close' : 'Load stargazers'}
+                    onPress={handleLoadStargazers}
+                />
             </View>
-            <Button title="Load stargazers" />
-        </View>
+            {isLoadStargazers && (
+                <FlatList
+                    data={stargazers}
+                    renderItem={render}
+                    style={styles.stargazerSection}
+                />
+            )}
+        </>
     );
 };
 
@@ -26,5 +59,9 @@ const styles = StyleSheet.create({
         paddingTop: 15,
         borderTopColor: '#ccc',
         borderTopWidth: 1,
+    },
+
+    stargazerSection: {
+        paddingTop: 15,
     },
 });

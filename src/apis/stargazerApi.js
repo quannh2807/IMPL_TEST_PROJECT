@@ -2,7 +2,7 @@ import axiosInstance from './axios';
 
 const stargazerApi = {
     getStargazers: (data, params) => {
-        const url = `/users/${data.userName}/${data.repo}/stargazers`;
+        const url = `/repos/${data.login}/${data.repo}/stargazers`;
 
         return axiosInstance.get(url, { params });
     },
