@@ -1,6 +1,5 @@
 import axios from 'axios';
 import queryString from 'query-string';
-import token from './passport';
 
 const axiosInstance = axios.create({
     baseURL: 'https://api.github.com',
@@ -13,10 +12,6 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
     async config => {
-        const tokenData = await token();
-        if (tokenData) {
-            config.headers.authorization = `Bearer ${tokenData}`;
-        }
         return config;
     },
     error => Promise.reject(error),
@@ -24,9 +19,9 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
     response => {
-        if (response && response.data) {
-            return response.data;
-        }
+        // if (response && response.data) {
+        //     return response.data;
+        // }
         return response;
     },
     error => {

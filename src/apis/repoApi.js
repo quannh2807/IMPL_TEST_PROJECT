@@ -1,10 +1,10 @@
 import axiosInstance from './axios';
 
 const repoApi = {
-    getRepos: data => {
-        const url = `/users/${data.userName}/repos`;
+    getRepos: (userName, params) => {
+        const url = `/users/${userName}/repos`;
 
-        return axiosInstance.get(url);
+        return axiosInstance.get(url, { params });
     },
 };
 

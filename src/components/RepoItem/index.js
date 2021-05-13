@@ -4,8 +4,10 @@ import { Button, StyleSheet, Text, View } from 'react-native';
 const RepoItem = ({ name, star }) => {
     return (
         <View style={styles.listRepoItem}>
-            <Text>{name}</Text>
-            <Text>{`Star: ${star}`}</Text>
+            <View>
+                <Text>{name}</Text>
+                <Text>{`Star: ${star}`}</Text>
+            </View>
             <Button title="Load stargazers" />
         </View>
     );
